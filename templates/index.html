@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <title>Controle AgroSapiens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/annyang@2.6.1/dist/annyang.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/speechkitt.min.js"></script>
+    <style>
+        :root {
+            --verde-primario: #2E7D32;
+            --verde-secundario: #81C784;
+            --bg-primary: #f5f7fa;
+            --bg-glass: rgba(255, 255, 255, 0.25);
+            --bg-card: #ffffff;
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.1);
+            --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            --border-glass: 1px solid rgba(255, 255, 255, 0.2);
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --accent-blue: #007aff;
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        /* Sistema de Grid Principal */
+        .main-container {
+            padding: 1rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .glass-morphism {
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: var(--border-glass);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        .neo-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 
+                20px 20px 60px #d1d9e6,
+                -20px -20px 60px #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .neo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                25px 25px 70px #d1d9e6,
+                -25px -25px 70px #ffffff;
+        }
+
+        /* Header com relógio */
+        .system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: var(--border-glass);
+            box-shadow: var(--shadow-light);
+        }
+
+        .system-time {
+            text-align: center;
+            flex: 1;
+        }
+
+        .time-display {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .date-display {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .system-brand {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--verde-primario);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .weather-widget {
+            text-align: right;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Botões Neomórficos */
+        .neo-button {
+            background: var(--bg-card);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 0.875rem 1.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            box-shadow: 
+                8px 8px 16px #d1d9e6,
+                -8px -8px 16px #ffffff;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0.25rem;
+            min-height: 48px;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neo-button:hover {
+            color: var(--verde-primario);
+            transform: translateY(-1px);
+            box-shadow: 
+                10px 10px 20px #d1d9e6,
+                -10px -10px 20px #ffffff;
+        }
+
+        .neo-button:active {
+            transform: translateY(1px);
+            box-shadow: 
+                inset 4px 4px 8px #d1d9e6,
+                inset -4px -4px 8px #ffffff;
+        }
+
+        .neo-button.primary {
+            background: linear-gradient(135deg, var(--verde-primario) 0%, var(--verde-secundario) 100%);
+            color: white;
+            box-shadow: 
+                8px 8px 16px rgba(46, 125, 50, 0.3),
+                -8px -8px 16px rgba(255, 255, 255, 0.8);
+        }
+
+        .neo-button.primary:hover {
+            color: white;
+            filter: brightness(1.1);
+        }
+
+        .neo-button.voice-active {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #5ac8fa 100%);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Grid de Navegação */
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-grid .neo-button {
+            margin: 0;
+            padding: 1.25rem;
+            font-size: 1rem;
+            flex-direction: column;
+            text-align: center;
+            height: auto;
+            min-height: 80px;
+        }
+
+        /* Layout Principal */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .left-panel, .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Cards de Status */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .status-item {
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            padding: 1rem 0.75rem;
+            text-align: center;
+            box-shadow: 
+                inset 2px 2px 5px #d1d9e6,
+                inset -2px -2px 5px #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .status-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .status-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--verde-primario);
+            margin-top: 0.5rem;
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: 
+                inset 8px 8px 16px #d1d9e6,
+                inset -8px -8px 16px #ffffff;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(245, 247, 250, 0.5);
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            box-shadow: 
+                inset 4px 4px 8px #d1d9e6,
+                inset -4px -4px 8px #ffffff;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            box-shadow: 
+                inset 4px 4px 8px #d1d9e6,
+                inset -4px -4px 8px #ffffff,
+                0 0 0 3px rgba(46, 125, 50, 0.1);
+        }
+
+        /* Badges e Indicadores */
+        .badge {
+            border-radius: 20px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge.status-online {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+        }
+
+        .badge.status-offline {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            color: white;
+        }
+
+        /* Controles Rápidos */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .control-button {
+            padding: 1rem;
+            text-align: center;
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            box-shadow: 
+                6px 6px 12px #d1d9e6,
+                -6px -6px 12px #ffffff;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                8px 8px 16px #d1d9e6,
+                -8px -8px 16px #ffffff;
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+            box-shadow: 
+                inset 3px 3px 6px #d1d9e6,
+                inset -3px -3px 6px #ffffff;
+        }
+
+        /* Seção de Relatórios */
+        .reports-section {
+            margin-top: 1rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 
+                inset 4px 4px 8px #d1d9e6,
+                inset -4px -4px 8px #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            box-shadow: 
+                4px 4px 8px #d1d9e6,
+                -4px -4px 8px #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Notificações */
+        .notification-card {
+            background: var(--bg-card);
+            border-left: 4px solid var(--verde-primario);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 
+                8px 8px 16px #d1d9e6,
+                -8px -8px 16px #ffffff;
+            animation: slideInRight 0.4s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Modais */
+        .modal-content {
+            background: var(--bg-card);
+            border: none;
+            border-radius: var(--radius);
+            box-shadow: 
+                20px 20px 60px rgba(0, 0, 0, 0.1),
+                -20px -20px 60px rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(209, 217, 230, 0.3);
+            padding: 1.5rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .system-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .time-display {
+                font-size: 2rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 0.75rem;
+            }
+
+            .neo-card {
+                padding: 1rem;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-container {
+                padding: 0.5rem;
+            }
+
+            .system-header {
+                padding: 1rem;
+            }
+
+            .nav-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .neo-button {
+                padding: 1rem;
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Elementos específicos */
+        .editable-field {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .editable-field:hover {
+            background: rgba(129, 199, 132, 0.1);
+            box-shadow: inset 2px 2px 4px rgba(129, 199, 132, 0.2);
+        }
+
+        .change-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .positive {
+            color: var(--verde-primario);
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .container {
+            padding: 0;
+            max-width: 100%;
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--verde-secundario);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--verde-primario);
+        }
+    </style>
+</head>
+<body>
+    <div id="notificationPanel" class="position-fixed top-0 end-0 m-3" style="z-index: 1000; max-width: 300px;"></div>
+
+    <audio id="notificationSound">
+        <source src="/static/notification.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        if(!sessionStorage.getItem('agroIntro')) {
+            sessionStorage.setItem('agroIntro', '1');
+            window.location.href = "/";
+        }
+
+        // Relógio em tempo real
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.querySelector('.time-display').textContent = timeString;
+            document.querySelector('.date-display').textContent = dateString;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+
+    <div class="main-container">
+        <!-- Header do Sistema -->
+        <div class="system-header">
+            <div class="system-brand">
+                🌿 AgroSapiens
+                <span style="font-size: 0.7rem; background: var(--verde-secundario); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; margin-left: 0.5rem;">v2.0</span>
+            </div>
+            <div class="system-time">
+                <div class="time-display">--:--:--</div>
+                <div class="date-display">Carregando...</div>
+            </div>
+            <div class="weather-widget">
+                <div>Canindé de São Francisco, SE</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">🌤️ Assistente Agrícola</div>
+            </div>
+        </div>
+
+        <!-- Navegação Principal -->
+        <div class="nav-grid">
+            <a href="/profile" class="neo-button">
+                👤<br>Meu Perfil
+            </a>
+            <a href="{{ url_for('search') }}" class="neo-button">
+                🔍<br>Buscar Agricultores
+            </a>
+            <a href="/radio" class="neo-button">
+                📻<br>Acessar Rádio
+            </a>
+            <a href="/forecast" class="neo-button">
+                🌦️<br>Previsão 5 Dias
+            </a>
+        </div>
+
+        <!-- Relatórios (Colapsável) -->
+        <div class="collapse" id="reportsCollapse">
+            <div class="neo-card reports-section">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">📈 Análise Diária</h4>
+                    <select class="form-select" id="periodSelect" onchange="updateCharts()" style="width: auto; border-radius: 12px; border: none; background: var(--bg-card); box-shadow: inset 2px 2px 4px #d1d9e6, inset -2px -2px 4px #ffffff;">
+                        <option value="2">Ontem</option>
+                        <option value="15" selected>Últimos 15 dias</option>
+                        <option value="30">Últimos 30 dias</option>
+                    </select>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="mainChart"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card" onclick="showDetail('water')">
+                        <div class="status-label">💧 Uso de Água</div>
+                        <div id="waterChange" class="change-value">+0%</div>
+                    </div>
+                    <div class="stat-card" onclick="showDetail('plants')">
+                        <div class="status-label">🌱 Total de Plantas</div>
+                        <div id="plantsChange" class="change-value">+0%</div>
+                    </div>
+                    <div class="stat-card" onclick="showDetail('seeds')">
+                        <div class="status-label">🌰 Estoque Sementes</div>
+                        <div id="seedsChange" class="change-value">+0%</div>
+                    </div>
+                    <div class="stat-card" onclick="showDetail('productivity')">
+                        <div class="status-label">📈 Produtividade</div>
+                        <div id="prodChange" class="change-value">Em breve</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Principal -->
+        <div class="main-grid">
+            <!-- Painel Esquerdo -->
+            <div class="left-panel">
+                <!-- Controles Rápidos -->
+                <div class="neo-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">⚡ Controles Rápidos</h4>
+                        <button class="neo-button" data-bs-toggle="collapse" href="#reportsCollapse">
+                            📊 Relatórios
+                        </button>
+                    </div>
+                    
+                    <div class="controls-grid">
+                        <button class="control-button" onclick="sendCommand('enable_irrigation')">
+                            💧 Ligar Irrigação
+                        </button>
+                        <button class="control-button" onclick="sendCommand('disable_irrigation')">
+                            🚫 Desligar Irrigação
+                        </button>
+                        <button class="control-button" onclick="sendCommand('check_soil_moisture')">
+                            🌡️ Verificar Umidade
+                        </button>
+                        <button class="control-button" onclick="sendCommand('check_temperature')">
+                            🌤️ Verificar Clima
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status da Roça -->
+                <div class="neo-card">
+                    <h4 class="mb-3">🏡 Status da Roça</h4>
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-label">🌱 Irrigação</div>
+                            <div id="irrigationStatus" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">⚙️ Auto Mode</div>
+                            <div id="autoModeStatus" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">💧 Umidade Solo</div>
+                            <div id="soilMoisture" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🌡️ Temperatura</div>
+                            <div id="temperature" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">☁️ Clima</div>
+                            <div id="weather" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🌬️ Umidade Ar</div>
+                            <div id="humidity" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🍃 Vento</div>
+                            <div id="wind" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">☁️ Nebulosidade</div>
+                            <div id="clouds" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">📊 Pressão</div>
+                            <div id="pressure" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">☀️ Nascer Sol</div>
+                            <div id="sunrise" class="status-value">N/A</div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🌅 Pôr Sol</div>
+                            <div id="sundown" class="status-value">N/A</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Direito -->
+            <div class="right-panel">
+                <!-- Chat AgroSapiens -->
+                <div class="neo-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">🤖 Chat AgroSapiens</h4>
+                        <button class="neo-button" id="voiceButton" onclick="toggleVoiceControl()">
+                            🎤 Voz
+                        </button>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <div id="chatMessages" class="chat-messages"></div>
+                        <div class="chat-input-group">
+                            <input type="text" id="chatInput" class="chat-input" placeholder="Digite ou fale sua pergunta..." 
+                                onkeypress="handleEnter(event)">
+                            <button class="neo-button primary" onclick="sendMessage()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dados da Plantação -->
+                <div class="neo-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">🌾 Dados da Plantação</h4>
+                        <button class="neo-button" onclick="toggleEditMode()">
+                            ✏️ Editar
+                        </button>
+                    </div>
+                    
+                    <div class="status-grid">
+                        <div class="status-item">
+                            <div class="status-label">🌱 Plantas Jovens</div>
+                            <div class="status-value">
+                                <span class="editable-field" data-field="young_plants">N/A</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🌳 Plantas Adultas</div>
+                            <div class="status-value">
+                                <span class="editable-field" data-field="adult_plants">N/A</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">💧 Água Utilizada</div>
+                            <div class="status-value">
+                                <span class="editable-field" data-field="water_used">N/A</span>
+                            </div>
+                        </div>
+                        <div class="status-item">
+                            <div class="status-label">🌰 Estoque Sementes</div>
+                            <div class="status-value">
+                                <span class="editable-field" data-field="seed_stock">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    <script>
+
+const eventSource = new EventSource('/stream');
+
+eventSource.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    if(data.messages) {
+        showNotifications(data.messages);
+    }
+};
+
+let mainChart, detailChart;
+
+function calculateChanges(data, days) {
+    if(data.length < 2) return { water: 0, plants: 0, seeds: 0 };
+
+    const latest = data[data.length-1];
+    const oldest = data[0];
+    
+    // Cálculo para água (porcentagem e valor absoluto)
+    const waterNow = parseFloat(latest.data.water_used.replace('L','')) || 0;
+    const waterPast = parseFloat(oldest.data.water_used.replace('L','')) || 0;
+    const waterDiff = waterNow - waterPast;
+    const waterPercent = waterPast !== 0 ? ((waterDiff / waterPast) * 100) : 100;
+
+    // Cálculo para plantas e sementes (valores absolutos)
+    const plantsDiff = (parseInt(latest.data.young_plants) - parseInt(oldest.data.young_plants)) + 
+                      (parseInt(latest.data.adult_plants) - parseInt(oldest.data.adult_plants));
+    
+    const seedsDiff = parseInt(latest.data.seed_stock) - parseInt(oldest.data.seed_stock);
+
+    return {
+        water: { value: waterDiff, percent: waterPercent },
+        plants: plantsDiff,
+        seeds: seedsDiff
+    };
+}
+
+function calculatePercentage(current, past) {
+    const curr = parseFloat(current);
+    const prev = parseFloat(past);
+    if(prev === 0) return { value: curr, percent: 100 };
+    return {
+        value: curr,
+        percent: ((curr - prev) / prev * 100).toFixed(1)
+    };
+}
+
+function calculateValue(current, past) {
+    return {
+        current: parseInt(current),
+        past: parseInt(past),
+        diff: current - past
+    };
+}
+
+async function updateCharts() {
+    const days = parseInt(document.getElementById('periodSelect').value);
+    const response = await fetch(`/historical_data/${days}`);
+    const history = await response.json();
+    
+    if(history.length === 0) return;
+
+    const changes = calculateChanges(history, days);
+    
+    // Atualizar cards
+    updateChangeDisplay('waterChange', 
+                       `${changes.water.value}L (${changes.water.percent.toFixed(1)}%)`, 
+                       '', true);
+    updateChangeDisplay('plantsChange', changes.plants, 'plantas');
+    updateChangeDisplay('seedsChange', changes.seeds, 'sementes');
+
+    // Atualizar gráfico principal
+    if(mainChart) mainChart.destroy();
+    
+    const ctx = document.getElementById('mainChart').getContext('2d');
+    mainChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: history.map(d => d.date),
+            datasets: [
+                {
+                    label: 'Água (L)',
+                    data: history.map(d => parseFloat(d.data.water_used.replace('L',''))),
+                    borderColor: '#2E7D32',
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Total Plantas',
+                    data: history.map(d => 
+                        parseInt(d.data.young_plants) + 
+                        parseInt(d.data.adult_plants)),
+                    borderColor: '#81C784',
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { text: 'Litros de Água', display: true }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: { text: 'Quantidade de Plantas', display: true },
+                    grid: { drawOnChartArea: false }
+                }
+            }
+        }
+    });
+}
+
+function updateChangeDisplay(elementId, value, suffix = '', isWater = false) {
+    const element = document.getElementById(elementId);
+    let formattedValue = value;
+    if(!isWater) {
+        formattedValue = `${value > 0 ? '+' : ''}${Math.round(value)} ${suffix}`;
+    }
+    
+    element.textContent = formattedValue;
+    element.className = `change-value ${value >= 0 ? 'positive' : 'negative'}`;
+}
+
+async function showDetail(type) {
+    try {
+        const days = parseInt(document.getElementById('periodSelect').value);
+        const response = await fetch(`/historical_data/${days}`);
+        const history = await response.json();
+        
+        if(history.length === 0) {
+            alert("Sem dados históricos!");
+            return;
+        }
+
+        const ctx = document.getElementById('detailChart').getContext('2d');
+        if(detailChart) detailChart.destroy();
+
+        let config = {};
+        const labels = history.map(d => d.date);
+        
+        switch(type) {
+            case 'water':
+                config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Água (L)',
+                            data: history.map(d => parseFloat(d.data.water_used.replace('L',''))),
+                            borderColor: '#2E7D32'
+                        }]
+                    }
+                };
+                break;
+            case 'plants':
+                config = {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Plantas Jovens',
+                                data: history.map(d => parseInt(d.data.young_plants)),
+                                backgroundColor: '#81C784'
+                            },
+                            {
+                                label: 'Plantas Adultas',
+                                data: history.map(d => parseInt(d.data.adult_plants)),
+                                backgroundColor: '#2E7D32'
+                            }
+                        ]
+                    }
+                };
+                break;
+            case 'seeds':
+                config = {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Estoque Atual', 'Estoque Inicial'],
+                        datasets: [{
+                            data: [
+                                parseInt(history[history.length-1].data.seed_stock),
+                                parseInt(history[0].data.seed_stock)
+                            ],
+                            backgroundColor: ['#2E7D32', '#81C784']
+                        }]
+                    }
+                };
+                break;
+        }
+
+        detailChart = new Chart(ctx, config);
+        new bootstrap.Modal('#detailModal').show();
+        
+    } catch(error) {
+        console.error('Erro ao carregar detalhes:', error);
+    }
+}
+
+// Atualizar gráficos a cada 5 minutos
+setInterval(updateCharts, 300000);
+updateCharts();
+
+        let chatHistory = [];
+        let voiceControlActive = false;
+        let currentEditField = null;
+        
+        // Ativa o modo de edição
+function toggleEditMode() {
+    document.querySelectorAll('.editable-field').forEach(field => {
+        field.style.cursor = 'pointer';
+        field.style.borderBottom = '2px dashed var(--verde-secundario)';
+    });
+}
+
+// Novo código com delegação de eventos
+document.addEventListener('DOMContentLoaded', () => {
+    const editModal = new bootstrap.Modal(document.getElementById('editModal'));
+    let currentEditField = null;
+
+    // Evento de clique nos campos editáveis
+    document.querySelectorAll('.editable-field').forEach(field => {
+        field.addEventListener('click', (e) => {
+            currentEditField = e.target;
+            document.getElementById('editInput').value = e.target.textContent;
+            editModal.show();
+        });
+    });
+
+    // Função de salvamento
+    window.saveEdit = () => {
+        if (!currentEditField) return;
+
+        const field = currentEditField.dataset.field;
+        const value = document.getElementById('editInput').value;
+
+        fetch('/update_plantation', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({[field]: value})
+        })
+        .then(response => {
+            if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+    if(data.status === 'success') {
+        currentEditField.textContent = value;
+        editModal.hide();
+        updateStatus();
+        updateCharts(); // Atualiza gráficos após edição
+    }
+})
+        .catch(error => {
+            console.error('Erro:', error);
+            alert(`Erro ao salvar: ${error.message}`);
+        });
+    };
+});
+
+        function startVoiceRecognition() {
+    if (annyang) {
+        annyang.abort(); // Resetar qualquer instância anterior
+        annyang.setLanguage('pt-BR');
+        
+        annyang.addCommands({
+            '*text': function(text) {
+                document.getElementById('chatInput').value = text;
+                // Enviar automaticamente após 500ms para garantir o reconhecimento
+                setTimeout(() => {
+                    sendMessage();
+                    toggleVoiceControl(); // Desliga o microfone após envio
+                }, 3000);
+            }
+        });
+
+        annyang.start({ autoRestart: false, continuous: false });
+        document.getElementById('chatInput').placeholder = "Ouvindo...";
+    } else {
+        alert('Reconhecimento de voz não suportado!');
+    }
+}
+
+function toggleVoiceControl() {
+    const voiceButton = document.getElementById('voiceButton');
+    
+    if (!voiceControlActive) {
+        startVoiceRecognition();
+        voiceControlActive = true;
+        voiceButton.classList.add('voice-active');
+    } else {
+        annyang.abort();
+        voiceControlActive = false;
+        voiceButton.classList.remove('voice-active');
+        document.getElementById('chatInput').placeholder = "Digite ou fale sua pergunta...";
+    }
+}
+
+        function handleEnter(event) {
+            if(event.key === 'Enter') sendMessage();
+        }
+
+        function speakText(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'pt-BR';
+            speechSynthesis.speak(utterance);
+        }
+
+        function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value;
+    if(message.trim() === '') return;
+
+    // Desativar o controle por voz após envio
+    if(voiceControlActive) {
+        toggleVoiceControl();
+    }
+
+    chatHistory.push({role: 'user', content: message});
+    const chatDiv = document.getElementById('chatMessages');
+    chatDiv.innerHTML += `<div class="alert alert-secondary mb-2">Você: ${message}</div>`;
+    
+    input.value = '';
+    
+    fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: message, history: chatHistory})
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Adiciona a resposta do assistente ao chat
+        chatHistory.push({role: 'assistant', content: data.response});
+        chatDiv.innerHTML += `<div class="alert alert-success mb-2">AgroSapiens: ${data.response}</div>`;
+        
+        // Rolagem automática para a última mensagem
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+
+        // Reproduz o áudio no cliente
+        if (data.audio) {
+            const audio = new Audio(`/tts/${data.audio}`);
+            audio.play().catch(error => console.error('Erro ao reproduzir áudio:', error));
+        }
+    });
+}
+
+        function sendCommand(command) {
+            fetch('/command', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({command: command})
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Erro no comando');
+                return response.json();
+            })
+            .then(data => {
+                if(data.status === 'success') {
+                    // Atualiza o status e mostra feedback
+                    updateStatus();
+                    showCommandFeedback(data.message); 
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showCommandFeedback(`Falha: ${error.message}`);
+            });
+        }
+
+        function showCommandFeedback(message) {
+            const feedback = document.createElement('div');
+            feedback.className = 'alert alert-info position-fixed top-0 start-50 translate-middle-x mt-2';
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => feedback.remove(), 3000);
+        }
+
+        function updateStatus() {
+            fetch('/status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('irrigationStatus').textContent = data.irrigation ? '✅ Ligada' : '❌ Desligada';
+                document.getElementById('autoModeStatus').textContent = data.auto_mode ? '✅ Ativo' : '❌ Inativo';
+                document.getElementById('soilMoisture').textContent = data.soil_moisture + '%';
+                document.getElementById('temperature').textContent = data.temperature;
+                document.getElementById('weather').textContent = data.weather;
+                document.getElementById('humidity').textContent = data.humidity;
+                document.getElementById('wind').textContent = data.wind;
+                document.getElementById('clouds').textContent = data.clouds;
+                document.getElementById('pressure').textContent = data.pressure;
+                document.getElementById('sunrise').textContent = data.sunrise;
+                document.getElementById('sundown').textContent = data.sundown;
+                document.querySelector('[data-field="young_plants"]').textContent = data.young_plants;
+                document.querySelector('[data-field="adult_plants"]').textContent = data.adult_plants;
+                document.querySelector('[data-field="water_used"]').textContent = data.water_used;
+                document.querySelector('[data-field="seed_stock"]').textContent = data.seed_stock;
+            });
+        }
+        // Atualizar status a cada 2 segundos
+        setInterval(updateStatus, 5000);
+        updateStatus(); 
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Sistema de navegação com transição
+        function navigateTo(event, url) {
+            event.preventDefault();
+            document.body.classList.add('fade-out');
+            
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+    
+        // Intercepta todos os cliques em links
+        document.querySelectorAll('a').forEach(link => {
+            if(link.href && !link.hash) { // Ignora âncoras
+                link.addEventListener('click', (e) => navigateTo(e, link.href));
+            }
+        });
+    
+        function checkForNotifications() {
+    fetch('/notifications')
+        .then(response => response.json())
+        .then(data => {
+            if(data.messages && data.messages.length > 0) {
+                showNotifications(data.messages);
+                system_state.last_notification = null; // Reset após mostrar
+            }
+        });
+}
+
+function showNotifications(messages) {
+    const panel = document.getElementById('notificationPanel');
+    const sound = document.getElementById('notificationSound');
+    
+    // Toca o som de notificação
+    sound.play().catch(error => console.error('Erro ao tocar som:', error));
+    
+    // Gera TTS para cada mensagem
+    messages.forEach(msg => {
+        fetch('/chat', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({message: msg, history: []})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.audio) {
+                const audio = new Audio(`/tts/${data.audio}`);
+                audio.play().catch(e => console.error('Erro TTS:', e));
+            }
+        });
+        
+        // Cria card de notificação
+        const card = document.createElement('div');
+        card.className = 'notification-card';
+        card.innerHTML = `
+            <div class="d-flex align-items-center">
+                <span class="me-2">⚠️</span>
+                <div>${msg}</div>
+            </div>
+        `;
+        panel.appendChild(card);
+    });
+
+    // Remove após 15 segundos
+    setTimeout(() => {
+        panel.innerHTML = '';
+    }, 15000);
+}
+// Verifica notificações a cada 1 minuto
+setInterval(checkForNotifications, 60000);
+    </script>
+</body>
+</html>

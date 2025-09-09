@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buscar Agricultores - AgroSapiens</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --agro-green: #2ecc71;
+            --agro-dark: #27ae60;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+        }
+
+        .user-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.15);
+        }
+
+        .ranking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 20px;
+        }
+
+        .farm-title {
+            font-family: 'Arial Black', sans-serif;
+            color: var(--agro-dark);
+            border-left: 5px solid var(--agro-green);
+            padding-left: 1rem;
+            margin: 1rem 0;
+        }
+
+        .like-btn {
+            background: none;
+            border: 2px solid var(--agro-green);
+            color: var(--agro-green);
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .like-btn:hover {
+            background: var(--agro-green);
+            color: white;
+        }
+
+        .filter-box {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('index') }}" class="btn btn-success mt-3">← Voltar</a>
+        
+        <div class="search-container">
+            <!-- Área Principal -->
+            <div>
+                <div class="filter-box animate__animated animate__fadeIn">
+                    <form id="searchForm">
+                        <div class="input-group mb-3">
+                            <input type="text" name="q" class="form-control" placeholder="Pesquisar por nome..."
+                                   value="{{ current_filters.q }}">
+                            <button class="btn btn-success" type="submit">🔍</button>
+                        </div>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <select name="city" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Todas as cidades</option>
+                                    {% for city in cities %}
+                                    <option value="{{ city }}" {% if city == current_filters.city %}selected{% endif %}>
+                                        {{ city }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <input type="text" name="culture" class="form-control" 
+                                       placeholder="Filtrar por cultura..." value="{{ current_filters.culture }}"
+                                       onchange="this.form.submit()">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="resultsContainer">
+                    {% for user in users %}
+                    <div class="user-card animate__animated animate__fadeInUp">
+                        <div class="d-flex align-items-start gap-4">
+                            <img src="{{ url_for('static', filename='uploads/profiles/' + user[6]) if user[6] else 'https://via.placeholder.com/100' }}" 
+                                 class="rounded-circle" 
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                            
+                            <div class="flex-grow-1">
+                                <h3 class="farm-title">Fazenda de {{ user[1] }}</h3>
+                                <div class="d-flex gap-4 mb-3">
+                                    <div>
+                                        <small class="text-muted">Cidade</small>
+                                        <p class="mb-0">{{ user[4] }}</p>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted">Culturas</small>
+                                        <p class="mb-0">
+                                            {% if user[7] %}
+                                                {% for culture in user[7].split(',') %}
+                                                <span class="badge bg-success bg-opacity-10 text-success me-1">{{ culture }}</span>
+                                                {% endfor %}
+                                            {% else %}
+                                                <span class="text-muted">Nenhuma cultura cadastrada</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                <p class="text-muted">{{ user[5] or "Sem biografia" }}</p>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button class="like-btn mb-2" data-user-id="{{ user[0] }}">
+                                    ❤️ {{ user[8] }}
+                                </button>
+                                <br>
+                                <small class="text-muted">Curtidas</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Ranking Lateral -->
+            <div class="ranking-card animate__animated animate__fadeIn">
+                <h4 class="mb-4">🏆 Top Fazendas</h4>
+                {% for rank, user in top_users %}
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rank-badge me-3" style="width: 30px; height: 30px; 
+                        border-radius: 50%; 
+                        display: flex; 
+                        align-items: center; 
+                        justify-content: center;
+                        color: white;
+                        font-weight: bold;"
+                        class="{% if rank == 1 %}gold-badge{% elif rank == 2 %}silver-badge{% else %}bronze-badge{% endif %}">
+                        {{ rank }}
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ user[1] }}</div>
+                        <small class="text-muted">{{ user[8] }} curtidas</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function likeUser(userId, button) {
+            try {
+                const response = await fetch(`/like/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const currentLikes = parseInt(button.textContent.match(/\d+/)[0]);
+                    button.innerHTML = `❤️ ${currentLikes + 1}`;
+                    button.classList.add('animate__animated', 'animate__heartBeat');
+                    setTimeout(() => {
+                        button.classList.remove('animate__heartBeat');
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Erro ao curtir:', error);
+            }
+        }
+
+        // Busca em tempo real
+        document.getElementById('searchForm').addEventListener('input', function(e) {
+            const formData = new FormData(this);
+            const params = new URLSearchParams(formData);
+            
+            fetch(`/search?${params.toString()}`)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.getElementById('resultsContainer').innerHTML;
+                    document.getElementById('resultsContainer').innerHTML = newContent;
+                });
+        });
+        // Add event listeners to like buttons
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                likeUser(this.getAttribute('data-user-id'), this);
+            });
+        });
+    </script>
+</body>
+</html>

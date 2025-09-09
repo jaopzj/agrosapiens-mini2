@@ -1,0 +1,23 @@
+# Core Flask
+flask==3.0.2
+flask-login==0.6.3
+werkzeug==3.0.1
+
+# OpenAI e APIs
+openai==0.28.0
+requests==2.31.0
+
+# Áudio e voz
+pygame==2.5.2
+speechrecognition==3.10.0
+gtts==2.4.0
+
+# Utilitários
+python-dotenv==1.0.0
+pathlib==1.0.1
+
+# Banco de dados
+sqlalchemy==2.0.25
+
+# Produção
+gunicorn==21.2.0
