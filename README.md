@@ -26,16 +26,18 @@ Ele utiliza **Arduino** e componentes eletrônicos para representar soluções a
 - **Arduino UNO** – microcontrolador principal  
 - **Linguagem C/C++** – programação embarcada  
 - **Servo Motor** – simulação de comporta de irrigação  
-- **Sensor de Umidade do Solo** – monitoramento ambiental  
+- **Sensor de Umidade do Solo** – monitoramento ambiental
+- **Python (Servidor Flask + Funções)** – coleta de dados climáticos  
 - **Python (Web Scraping)** – coleta de dados climáticos  
 
 ---
 
 ## ⚠️ Aviso Importante
 
-- Este **NÃO é o projeto oficial do AgroSapiens**.  
+- Este **NÃO é o projeto oficial do AgroSapiens**.
+- As chaves APIs estão públicas mas serão revogadas antes de qualquer utilização.  
 - Não há previsão de divulgação da versão completa.  
-- **Não é autorizada a divulgação ou utilização** deste protótipo sem minha permissão expressa.  
+- **Não é autorizada a divulgação ou utilização** do protótipo original e principal sem minha permissão expressa.  
 
 ---
 
